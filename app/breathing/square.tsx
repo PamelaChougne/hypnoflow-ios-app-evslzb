@@ -5,7 +5,6 @@ import { commonStyles, colors, buttonStyles } from '../../styles/commonStyles';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 
 export default function SquareBreathingScreen() {
   const [isActive, setIsActive] = useState(false);
@@ -14,10 +13,9 @@ export default function SquareBreathingScreen() {
   const [cycles, setCycles] = useState(0);
   
   const scaleAnim = useRef(new Animated.Value(0.5)).current;
-  const opacityAnim = useRef(new Animated.Value(0.3)).current;
-  const rotateAnim = useRef(new Animated.Value(0)).current;
+  const colorAnim = useRef(new Animated.Value(0)).current;
   
-  const PHASE_TIME = 4; // 4 secondes pour chaque phase
+  const PHASE_TIME = 4; // 4 secondes exactement pour chaque phase
 
   console.log('SquareBreathingScreen rendered', { isActive, phase, timeLeft, cycles });
 
@@ -60,48 +58,43 @@ export default function SquareBreathingScreen() {
 
   useEffect(() => {
     if (isActive) {
-      let targetScale = 0.6;
-      let targetOpacity = 0.4;
-      let targetRotation = 0;
+      let targetScale = 0.5;
+      let targetColorValue = 0;
 
       switch (phase) {
         case 'inhale':
+          // Le carré GRANDIT progressivement, couleur turquoise
           targetScale = 1.2;
-          targetOpacity = 1;
-          targetRotation = 0;
+          targetColorValue = 0;
           break;
         case 'hold1':
+          // Le carré reste FIGÉ à sa taille maximale, couleur violette
           targetScale = 1.2;
-          targetOpacity = 1;
-          targetRotation = 0.25;
+          targetColorValue = 1;
           break;
         case 'exhale':
-          targetScale = 0.6;
-          targetOpacity = 0.4;
-          targetRotation = 0.5;
+          // Le carré RÉTRÉCIT progressivement, couleur bleue
+          targetScale = 0.5;
+          targetColorValue = 2;
           break;
         case 'hold2':
-          targetScale = 0.6;
-          targetOpacity = 0.4;
-          targetRotation = 0.75;
+          // Le carré reste FIGÉ à sa taille minimale, couleur rose claire
+          targetScale = 0.5;
+          targetColorValue = 3;
           break;
       }
 
+      // Animation fluide et douce
       Animated.parallel([
         Animated.timing(scaleAnim, {
           toValue: targetScale,
-          duration: PHASE_TIME * 1000,
+          duration: phase === 'hold1' || phase === 'hold2' ? 0 : PHASE_TIME * 1000, // Pas d'animation pour les phases de rétention
           useNativeDriver: true,
         }),
-        Animated.timing(opacityAnim, {
-          toValue: targetOpacity,
-          duration: PHASE_TIME * 1000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(rotateAnim, {
-          toValue: targetRotation,
-          duration: PHASE_TIME * 1000,
-          useNativeDriver: true,
+        Animated.timing(colorAnim, {
+          toValue: targetColorValue,
+          duration: 500, // Transition de couleur rapide
+          useNativeDriver: false,
         }),
       ]).start();
     }
@@ -128,15 +121,10 @@ export default function SquareBreathingScreen() {
         duration: 500,
         useNativeDriver: true,
       }),
-      Animated.timing(opacityAnim, {
-        toValue: 0.3,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-      Animated.timing(rotateAnim, {
+      Animated.timing(colorAnim, {
         toValue: 0,
         duration: 500,
-        useNativeDriver: true,
+        useNativeDriver: false,
       }),
     ]).start();
   };
@@ -150,26 +138,22 @@ export default function SquareBreathingScreen() {
   const getPhaseText = () => {
     switch (phase) {
       case 'inhale': return 'Inspirez';
-      case 'hold1': return 'Retenez';
+      case 'hold1': return 'Retenez votre souffle';
       case 'exhale': return 'Expirez';
-      case 'hold2': return 'Retenez';
+      case 'hold2': return 'Retenez votre souffle';
       default: return 'Inspirez';
     }
   };
 
-  const getPhaseColor = () => {
-    switch (phase) {
-      case 'inhale': return colors.accent;
-      case 'hold1': return colors.interactive;
-      case 'exhale': return colors.secondAccent;
-      case 'hold2': return colors.softSecondary;
-      default: return colors.accent;
-    }
-  };
-
-  const rotation = rotateAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
+  // Interpolation des couleurs selon les spécifications
+  const backgroundColor = colorAnim.interpolate({
+    inputRange: [0, 1, 2, 3],
+    outputRange: [
+      '#42E1E3', // Turquoise pour inspiration
+      '#8A2BE2', // Violette pour rétention poumons pleins
+      '#4C9BE8', // Bleue pour expiration
+      '#F6AFCF'  // Rose claire pour rétention poumons vides
+    ],
   });
 
   return (
@@ -187,36 +171,30 @@ export default function SquareBreathingScreen() {
             4 temps de 4 secondes chacun
           </Text>
 
-          {/* Carré de respiration */}
+          {/* Carré de respiration avec animation fluide */}
           <View style={[commonStyles.centerContent, { marginBottom: 40 }]}>
             <Animated.View
               style={{
-                transform: [
-                  { scale: scaleAnim },
-                  { rotate: rotation }
-                ],
-                opacity: opacityAnim,
+                transform: [{ scale: scaleAnim }],
+                backgroundColor: backgroundColor,
+                width: 200,
+                height: 200,
+                borderRadius: 20,
+                alignItems: 'center',
+                justifyContent: 'center',
+                shadowColor: backgroundColor,
+                shadowOffset: { width: 0, height: 12 },
+                shadowOpacity: 0.4,
+                shadowRadius: 32,
+                elevation: 8,
               }}
             >
-              <LinearGradient
-                colors={[getPhaseColor(), colors.interactive]}
-                style={{
-                  width: 200,
-                  height: 200,
-                  borderRadius: 20,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: `0px 12px 32px ${getPhaseColor()}40`,
-                  elevation: 8,
-                }}
-              >
-                <Text style={[commonStyles.subtitle, { color: colors.text, fontSize: 20 }]}>
-                  {getPhaseText()}
-                </Text>
-                <Text style={[commonStyles.text, { color: colors.text, fontSize: 24, fontWeight: '700', marginBottom: 0 }]}>
-                  {Math.ceil(timeLeft)}
-                </Text>
-              </LinearGradient>
+              <Text style={[commonStyles.subtitle, { color: colors.text, fontSize: 20, textAlign: 'center' }]}>
+                {getPhaseText()}
+              </Text>
+              <Text style={[commonStyles.text, { color: colors.text, fontSize: 24, fontWeight: '700', marginBottom: 0 }]}>
+                {Math.ceil(timeLeft)}
+              </Text>
             </Animated.View>
           </View>
 

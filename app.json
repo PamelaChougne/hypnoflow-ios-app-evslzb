@@ -7,6 +7,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
+    "description": "Application proposant des techniques de respiration et un module de stimulation bilatérale pour favoriser le bien-être mental",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -19,7 +20,15 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.tiphainetouzeil.hypnoflow",
       "buildNumber": "1",
-      "deploymentTarget": "15.0"
+      "deploymentTarget": "15.0",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "audio"
+        ],
+        "NSMicrophoneUsageDescription": "Cette application utilise l'audio pour la stimulation bilatérale.",
+        "CFBundleDisplayName": "HypnoFlow",
+        "CFBundleName": "HypnoFlow"
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -27,7 +36,10 @@
         "backgroundColor": "#0B0314"
       },
       "package": "com.tiphainetouzeil.hypnoflow",
-      "versionCode": 1
+      "versionCode": 1,
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -38,11 +50,18 @@
       [
         "expo-av",
         {
-          "microphonePermission": "Allow HypnoFlow to access your microphone for audio features."
+          "microphonePermission": "Cette application utilise l'audio pour la stimulation bilatérale."
         }
       ]
     ],
     "scheme": "hypnoflow",
+    "locales": {
+      "fr": {
+        "name": "HypnoFlow",
+        "description": "Application proposant des techniques de respiration et un module de stimulation bilatérale pour favoriser le bien-être mental"
+      }
+    },
+    "primaryLanguage": "fr",
     "extra": {
       "router": {
         "origin": false

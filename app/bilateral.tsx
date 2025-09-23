@@ -61,11 +61,12 @@ export default function BilateralScreen() {
     console.log('Starting bilateral animation');
     
     const moveAnimation = () => {
+      // Animation synchronisée avec l'audio (2 secondes par cycle complet)
       Animated.sequence([
         Animated.parallel([
           Animated.timing(translateX, {
             toValue: 100,
-            duration: 1000,
+            duration: 1000, // 1 seconde pour aller à droite
             useNativeDriver: true,
           }),
           Animated.timing(scaleAnim, {
@@ -94,7 +95,7 @@ export default function BilateralScreen() {
         Animated.parallel([
           Animated.timing(translateX, {
             toValue: -100,
-            duration: 1000,
+            duration: 1000, // 1 seconde pour aller à gauche
             useNativeDriver: true,
           }),
           Animated.timing(scaleAnim, {
@@ -155,24 +156,39 @@ export default function BilateralScreen() {
     try {
       console.log('Loading and playing bilateral sound');
       
-      // Note: Since we can't access the WeTransfer link directly, 
-      // we'll simulate the audio experience
-      Alert.alert(
-        'Audio non disponible',
-        'Le fichier audio de stimulation bilatérale n\'est pas encore intégré. Suivez simplement la boule lumineuse des yeux.',
-        [{ text: 'OK' }]
-      );
-      
-      // In a real implementation, you would load the audio file like this:
-      // const { sound } = await Audio.Sound.createAsync(
-      //   { uri: 'path-to-your-audio-file' },
-      //   { shouldPlay: true, isLooping: true }
-      // );
-      // setSound(sound);
+      // Configuration audio pour la lecture stéréo
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        staysActiveInBackground: false,
+        playsInSilentModeIOS: true,
+        shouldDuckAndroid: true,
+        playThroughEarpieceAndroid: false,
+      });
+
+      // Tentative de chargement du fichier audio local
+      try {
+        const { sound } = await Audio.Sound.createAsync(
+          require('../assets/audio/stimulation_bilaterale.mp3'),
+          { 
+            shouldPlay: true, 
+            isLooping: false, // Le fichier dure exactement 1 minute
+            volume: 1.0,
+          }
+        );
+        setSound(sound);
+        console.log('Audio loaded and playing successfully');
+      } catch (audioError) {
+        console.log('Audio file not found, showing instructions:', audioError);
+        Alert.alert(
+          'Fichier audio manquant',
+          'Le fichier audio de stimulation bilatérale doit être placé dans assets/audio/stimulation_bilaterale.mp3\n\nTéléchargez le fichier depuis https://we.tl/t-Q3U9kVrp6A et placez-le dans le dossier assets/audio/',
+          [{ text: 'OK' }]
+        );
+      }
       
     } catch (error) {
-      console.log('Error loading sound:', error);
-      Alert.alert('Erreur', 'Impossible de charger le fichier audio');
+      console.log('Error setting up audio:', error);
+      Alert.alert('Erreur', 'Impossible de configurer l\'audio');
     }
   };
 
@@ -180,7 +196,7 @@ export default function BilateralScreen() {
     console.log('Starting bilateral stimulation');
     setShowInstructions(false);
     setIsActive(true);
-    setTimeLeft(60);
+    setTimeLeft(60); // Exactement 1 minute
     await loadAndPlaySound();
   };
 
@@ -220,7 +236,7 @@ export default function BilateralScreen() {
             Stimulation Bilatérale
           </Text>
           <Text style={[commonStyles.text, { marginBottom: 40, color: colors.softSecondary }]}>
-            Mouvement rythmé pour 1 minute
+            Mouvement rythmé avec audio stéréo - 1 minute
           </Text>
 
           {/* Instructions */}
@@ -260,7 +276,7 @@ export default function BilateralScreen() {
             </View>
           )}
 
-          {/* Zone de stimulation */}
+          {/* Zone de stimulation avec boule lumineuse synchronisée */}
           {!showInstructions && (
             <View style={{
               width: '100%',
@@ -293,7 +309,7 @@ export default function BilateralScreen() {
             </View>
           )}
 
-          {/* Timer */}
+          {/* Timer - exactement 1 minute */}
           {isActive && (
             <View style={[commonStyles.centerContent, { marginBottom: 40 }]}>
               <Text style={[commonStyles.text, { color: colors.accent, fontSize: 32, fontWeight: '700' }]}>

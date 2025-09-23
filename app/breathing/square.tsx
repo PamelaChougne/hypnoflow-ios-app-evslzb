@@ -138,9 +138,9 @@ export default function SquareBreathingScreen() {
   const getPhaseText = () => {
     switch (phase) {
       case 'inhale': return 'Inspirez';
-      case 'hold1': return 'Retenez votre souffle';
+      case 'hold1': return 'Bloquez';
       case 'exhale': return 'Expirez';
-      case 'hold2': return 'Retenez votre souffle';
+      case 'hold2': return 'Bloquez';
       default: return 'Inspirez';
     }
   };

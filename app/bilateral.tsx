@@ -66,7 +66,7 @@ export default function BilateralScreen() {
         Animated.parallel([
           Animated.timing(translateX, {
             toValue: 100,
-            duration: 1000, // 1 seconde pour aller à droite
+            duration: 500, // 1 seconde pour aller à droite
             useNativeDriver: true,
           }),
           Animated.timing(scaleAnim, {
@@ -95,7 +95,7 @@ export default function BilateralScreen() {
         Animated.parallel([
           Animated.timing(translateX, {
             toValue: -100,
-            duration: 1000, // 1 seconde pour aller à gauche
+            duration: 500, // 1 seconde pour aller à gauche
             useNativeDriver: true,
           }),
           Animated.timing(scaleAnim, {

@@ -157,7 +157,7 @@ export default function BilateralScreen() {
     console.log('Stopping bilateral stimulation');
     setIsActive(false);
     setTimeLeft(60);
-    
+  
     if (sound) {
       await sound.stopAsync();
       await sound.unloadAsync();
@@ -185,12 +185,18 @@ export default function BilateralScreen() {
 
       <View style={commonStyles.content}>
         <View style={[commonStyles.centerContent, { flex: 1 }]}>
-          <Text style={[commonStyles.title, { marginBottom: 8 }]}>
-            Stimulation Bilatérale
-          </Text>
-          <Text style={[commonStyles.text, { marginBottom: 40, color: colors.softSecondary }]}>
-            Clignotement synchronisé avec audio stéréo - 1 minute
-          </Text>
+          {/* ✅ MODIFICATION 1 & 2 : Titre mobile-optimisé + sous-titre sans "1 minute" */}
+          <View style={{ alignItems: 'center', marginBottom: 40 }}>
+            <Text style={[commonStyles.title, { marginBottom: 4, fontSize: 24 }]}>
+              Stimulation
+            </Text>
+            <Text style={[commonStyles.title, { marginBottom: 12, fontSize: 24 }]}>
+              Bilatérale
+            </Text>
+            <Text style={[commonStyles.text, { color: colors.softSecondary, textAlign: 'center', lineHeight: 20 }]}>
+              Clignotement synchronisé avec audio stéréo
+            </Text>
+          </View>
 
           {/* Instructions */}
           {showInstructions && (
@@ -257,7 +263,7 @@ export default function BilateralScreen() {
             </View>
           )}
 
-          {/* Boutons de contrôle */}
+          {/* ✅ MODIFICATION 3 : Bouton unique (suppression "Masquer les instructions") */}
           <View style={[commonStyles.section, { gap: 16 }]}>
             {!isActive ? (
               <TouchableOpacity
@@ -282,17 +288,6 @@ export default function BilateralScreen() {
                     Arrêter
                   </Text>
                 </View>
-              </TouchableOpacity>
-            )}
-
-            {showInstructions && (
-              <TouchableOpacity
-                style={[buttonStyles.secondary, { width: '100%' }]}
-                onPress={() => setShowInstructions(false)}
-              >
-                <Text style={[commonStyles.text, { fontSize: 16, fontWeight: '600', marginBottom: 0, color: colors.accent }]}>
-                  Masquer les instructions
-                </Text>
               </TouchableOpacity>
             )}
           </View>

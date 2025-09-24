@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Text, View, TouchableOpacity, Animated, Alert } from 'react-native';
 import { commonStyles, colors, buttonStyles } from '../styles/commonStyles';
@@ -14,7 +13,6 @@ export default function BilateralScreen() {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [showInstructions, setShowInstructions] = useState(true);
   
-  const translateX = useRef(new Animated.Value(-100)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const glowAnim = useRef(new Animated.Value(0.3)).current;
 
@@ -60,17 +58,13 @@ export default function BilateralScreen() {
   const startAnimation = () => {
     console.log('Starting bilateral animation');
     
-    const moveAnimation = () => {
-      // Animation synchronisée avec l'audio (2 secondes par cycle complet)
+    const blinkAnimation = () => {
+      // Boule centrée qui clignote parfaitement synchronisée avec l'audio (1000ms par cycle)
       Animated.sequence([
+        // Phase lumineuse (500ms)
         Animated.parallel([
-          Animated.timing(translateX, {
-            toValue: 100,
-            duration: 500, // 1 seconde pour aller à droite
-            useNativeDriver: true,
-          }),
           Animated.timing(scaleAnim, {
-            toValue: 1.2,
+            toValue: 1.3,
             duration: 500,
             useNativeDriver: true,
           }),
@@ -80,35 +74,7 @@ export default function BilateralScreen() {
             useNativeDriver: true,
           }),
         ]),
-        Animated.parallel([
-          Animated.timing(scaleAnim, {
-            toValue: 1,
-            duration: 500,
-            useNativeDriver: true,
-          }),
-          Animated.timing(glowAnim, {
-            toValue: 0.3,
-            duration: 500,
-            useNativeDriver: true,
-          }),
-        ]),
-        Animated.parallel([
-          Animated.timing(translateX, {
-            toValue: -100,
-            duration: 500, // 1 seconde pour aller à gauche
-            useNativeDriver: true,
-          }),
-          Animated.timing(scaleAnim, {
-            toValue: 1.2,
-            duration: 500,
-            useNativeDriver: true,
-          }),
-          Animated.timing(glowAnim, {
-            toValue: 1,
-            duration: 500,
-            useNativeDriver: true,
-          }),
-        ]),
+        // Phase sombre (500ms)
         Animated.parallel([
           Animated.timing(scaleAnim, {
             toValue: 1,
@@ -123,21 +89,16 @@ export default function BilateralScreen() {
         ]),
       ]).start(() => {
         if (isActive) {
-          moveAnimation();
+          blinkAnimation();
         }
       });
     };
 
-    moveAnimation();
+    blinkAnimation();
   };
 
   const stopAnimation = () => {
     console.log('Stopping bilateral animation');
-    Animated.timing(translateX, {
-      toValue: 0,
-      duration: 500,
-      useNativeDriver: true,
-    }).start();
     
     Animated.timing(scaleAnim, {
       toValue: 1,
@@ -165,30 +126,22 @@ export default function BilateralScreen() {
         playThroughEarpieceAndroid: false,
       });
 
-      // Tentative de chargement du fichier audio local
-      try {
-        const { sound } = await Audio.Sound.createAsync(
-          require('../assets/audio/stimulation_bilaterale.mp3'),
-          { 
-            shouldPlay: true, 
-            isLooping: false, // Le fichier dure exactement 1 minute
-            volume: 1.0,
-          }
-        );
-        setSound(sound);
-        console.log('Audio loaded and playing successfully');
-      } catch (audioError) {
-        console.log('Audio file not found, showing instructions:', audioError);
-        Alert.alert(
-          'Fichier audio manquant',
-          'Le fichier audio de stimulation bilatérale doit être placé dans assets/audio/stimulation_bilaterale.mp3\n\nTéléchargez le fichier depuis https://we.tl/t-Q3U9kVrp6A et placez-le dans le dossier assets/audio/',
-          [{ text: 'OK' }]
-        );
-      }
+      // Chargement du fichier audio optimisé
+      const { sound } = await Audio.Sound.createAsync(
+        require('../assets/audio/stimulation_bilaterale.mp3'),
+        { 
+          shouldPlay: true, 
+          isLooping: false, // Le fichier dure exactement 1 minute
+          volume: 1.0,
+        }
+      );
+      setSound(sound);
+      console.log('Audio loaded and playing successfully');
       
     } catch (error) {
-      console.log('Error setting up audio:', error);
-      Alert.alert('Erreur', 'Impossible de configurer l\'audio');
+      console.log('Error with audio:', error);
+      // L'animation visuelle continue même sans audio
+      Alert.alert('Info', 'Audio non disponible, la stimulation visuelle continue');
     }
   };
 
@@ -236,7 +189,7 @@ export default function BilateralScreen() {
             Stimulation Bilatérale
           </Text>
           <Text style={[commonStyles.text, { marginBottom: 40, color: colors.softSecondary }]}>
-            Mouvement rythmé avec audio stéréo - 1 minute
+            Clignotement rythmé avec audio stéréo - 1 minute
           </Text>
 
           {/* Instructions */}
@@ -256,27 +209,27 @@ export default function BilateralScreen() {
               <View style={commonStyles.instructionItem}>
                 <Text style={commonStyles.instructionNumber}>2.</Text>
                 <Text style={commonStyles.instructionText}>
-                  Suivez la boule lumineuse des yeux.
+                  Concentrez-vous sur le clignotement de la sphère.
                 </Text>
               </View>
               
               <View style={commonStyles.instructionItem}>
                 <Text style={commonStyles.instructionNumber}>3.</Text>
                 <Text style={commonStyles.instructionText}>
-                  Laissez-vous porter par le mouvement rythmé.
+                  Laissez-vous porter par le rythme synchronisé.
                 </Text>
               </View>
               
               <View style={commonStyles.instructionItem}>
                 <Text style={commonStyles.instructionNumber}>4.</Text>
                 <Text style={commonStyles.instructionText}>
-                  Tapotez en rythme !
+                  Respirez calmement en suivant le rythme.
                 </Text>
               </View>
             </View>
           )}
 
-          {/* Zone de stimulation avec boule lumineuse synchronisée */}
+          {/* Zone de stimulation avec boule centrée qui clignote */}
           {!showInstructions && (
             <View style={{
               width: '100%',
@@ -288,10 +241,7 @@ export default function BilateralScreen() {
             }}>
               <Animated.View
                 style={{
-                  transform: [
-                    { translateX: translateX },
-                    { scale: scaleAnim }
-                  ],
+                  transform: [{ scale: scaleAnim }],
                   opacity: glowAnim,
                 }}
               >

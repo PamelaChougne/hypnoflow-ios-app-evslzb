@@ -189,7 +189,7 @@ export default function BilateralScreen() {
             Stimulation Bilatérale
           </Text>
           <Text style={[commonStyles.text, { marginBottom: 40, color: colors.softSecondary }]}>
-            Clignotement rythmé avec audio stéréo - 1 minute
+            Clignotement synchronisé avec audio stéréo - 1 minute
           </Text>
 
           {/* Instructions */}
@@ -209,21 +209,7 @@ export default function BilateralScreen() {
               <View style={commonStyles.instructionItem}>
                 <Text style={commonStyles.instructionNumber}>2.</Text>
                 <Text style={commonStyles.instructionText}>
-                  Concentrez-vous sur le clignotement de la sphère.
-                </Text>
-              </View>
-              
-              <View style={commonStyles.instructionItem}>
-                <Text style={commonStyles.instructionNumber}>3.</Text>
-                <Text style={commonStyles.instructionText}>
-                  Laissez-vous porter par le rythme synchronisé.
-                </Text>
-              </View>
-              
-              <View style={commonStyles.instructionItem}>
-                <Text style={commonStyles.instructionNumber}>4.</Text>
-                <Text style={commonStyles.instructionText}>
-                  Respirez calmement en suivant le rythme.
+                  Tapotez en rythme !
                 </Text>
               </View>
             </View>

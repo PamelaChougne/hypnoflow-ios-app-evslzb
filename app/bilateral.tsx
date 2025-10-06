@@ -208,14 +208,14 @@ export default function BilateralScreen() {
               <View style={commonStyles.instructionItem}>
                 <Text style={commonStyles.instructionNumber}>1.</Text>
                 <Text style={commonStyles.instructionText}>
-                  Utilisez des écouteurs stéréo pour une expérience optimale.
+                  🎧 Utilisez des écouteurs stéréo pour une expérience optimale.
                 </Text>
               </View>
               
               <View style={commonStyles.instructionItem}>
                 <Text style={commonStyles.instructionNumber}>2.</Text>
                 <Text style={commonStyles.instructionText}>
-                  Tapotez en rythme !
+                  👐 Tapotez alternativement (main droite puis gauche) sur vos cuisses en suivant les sons.
                 </Text>
               </View>
             </View>

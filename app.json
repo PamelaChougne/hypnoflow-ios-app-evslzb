@@ -1,11 +1,10 @@
-
 {
   "expo": {
     "name": "HypnoFlow",
     "slug": "hypnoflow",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/hypnoflow-icon.png",
     "userInterfaceStyle": "dark",
     "description": "Application proposant des techniques de respiration et un module de stimulation bilatérale pour favoriser le bien-être mental",
     "splash": {
